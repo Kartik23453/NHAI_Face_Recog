@@ -1,0 +1,60 @@
+{
+  "expo": {
+    "name": "NetraSetu",
+    "slug": "netrasetu",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#0F172A",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "android": {
+      "package": "com.nhai.netrasetu",
+      "versionCode": 1,
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ],
+      "blockedPermissions": [
+        "android.permission.RECORD_AUDIO"
+      ]
+    },
+    "ios": {
+      "supportsTablet": false,
+      "infoPlist": {
+        "NSCameraUsageDescription": "NetraSetu uses your camera to identify workers via facial recognition for attendance marking.",
+        "NSMicrophoneUsageDescription": "Microphone access is not used."
+      }
+    },
+    "plugins": [
+      [
+        "react-native-vision-camera",
+        {
+          "cameraPermissionText": "NetraSetu uses the camera to identify workers and mark attendance.",
+          "enableFrameProcessors": true,
+          "enableCodeScanner": false
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "minSdkVersion": 26,
+            "packagingOptions": {
+              "pickFirst": [
+                "lib/**/libc++_shared.so",
+                "lib/**/libtensorflowlite_jni.so"
+              ]
+            }
+          }
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "netrasetu-nhai"
+      }
+    }
+  }
+}
