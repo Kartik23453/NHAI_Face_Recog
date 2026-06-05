@@ -110,7 +110,6 @@ export function getServiceState(): ServiceState {
  */
 export async function dispose(): Promise<void> {
   if (_model) {
-    _model.close();
     _model = null;
     console.log('[FaceRecognitionService] Model disposed.');
   }
@@ -148,7 +147,7 @@ export async function generateEmbedding(face: PreprocessedFace): Promise<FaceEmb
   // react-native-fast-tflite model.run() accepts an array of input tensors
   // and returns an array of output tensors.
   // GhostFaceNet: 1 input [1, 112, 112, 3], 1 output [1, 512]
-  const outputs = _model.run([face.tensor]);
+  const outputs = await _model.run([face.tensor]);
 
   const rawOutput = outputs[0] as Float32Array;
 

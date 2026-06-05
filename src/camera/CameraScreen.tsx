@@ -56,7 +56,7 @@ import {
   type Frame,
 } from 'react-native-vision-camera';
 import { useFaceDetector } from 'react-native-vision-camera-face-detector';
-import { runOnJS } from 'react-native-reanimated';
+import { Worklets } from 'react-native-worklets-core';
 import { ensureCameraPermission } from './CameraPermissions';
 import {
   analyseFaceQuality,
@@ -204,6 +204,8 @@ const CameraScreen: React.FC<CameraScreenProps> = ({ onValidFaceDetected }) => {
     }
   }, [frameCounter, handleValidFaceDetected]);
 
+  const updateQualityResultJS = Worklets.createRunOnJS(updateQualityResult);
+
   /**
    * Vision Camera frame processor.
    * Runs on every camera frame in a Reanimated worklet (not the JS thread).
@@ -220,7 +222,7 @@ const CameraScreen: React.FC<CameraScreenProps> = ({ onValidFaceDetected }) => {
 
       if (faces.length === 0) {
         // No face — pass a no-face result to JS thread
-        runOnJS(updateQualityResult)(noFaceResult());
+        updateQualityResultJS(noFaceResult());
         return;
       }
 
@@ -239,9 +241,9 @@ const CameraScreen: React.FC<CameraScreenProps> = ({ onValidFaceDetected }) => {
       };
 
       const result = analyseFaceQuality(bounds, frameDimensions);
-      runOnJS(updateQualityResult)(result);
+      updateQualityResultJS(result);
     },
-    [detectFaces, updateQualityResult],
+    [detectFaces, updateQualityResultJS],
   );
 
   // ---------------------------------------------------------------------------

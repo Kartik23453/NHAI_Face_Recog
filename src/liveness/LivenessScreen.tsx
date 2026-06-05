@@ -55,7 +55,7 @@ import {
   type Frame,
 } from 'react-native-vision-camera';
 import { useFaceDetector } from 'react-native-vision-camera-face-detector';
-import { runOnJS } from 'react-native-reanimated';
+import { Worklets } from 'react-native-worklets-core';
 
 // ── Phase 2 imports (reused) ─────────────────────────────────────────────────
 import { ensureCameraPermission } from '../camera/CameraPermissions';
@@ -225,6 +225,8 @@ const LivenessScreen: React.FC<LivenessScreenProps> = ({ onLivenessVerified }) =
     livenessFSM.current.onFaceFrame(qualityResult.isValid, blinkResult.blinkConfirmed);
   }, [blinkDetector]);
 
+  const processFrameOnJSWorklet = Worklets.createRunOnJS(processFrameOnJS);
+
   // ---------------------------------------------------------------------------
   // Frame processor — runs in Reanimated worklet on camera thread
   // ---------------------------------------------------------------------------
@@ -241,7 +243,7 @@ const LivenessScreen: React.FC<LivenessScreenProps> = ({ onLivenessVerified }) =
           leftEyeContour: [],
           rightEyeContour: [],
         };
-        runOnJS(processFrameOnJS)(noFace);
+        processFrameOnJSWorklet(noFace);
         return;
       }
 
@@ -266,9 +268,9 @@ const LivenessScreen: React.FC<LivenessScreenProps> = ({ onLivenessVerified }) =
       const contours = (face as any).contours ?? {};
 
       const leftEyeContour: Point2D[] =
-        (contours.leftEye as Point2D[] | undefined) ?? [];
+        (contours.LEFT_EYE as Point2D[] | undefined) ?? [];
       const rightEyeContour: Point2D[] =
-        (contours.rightEye as Point2D[] | undefined) ?? [];
+        (contours.RIGHT_EYE as Point2D[] | undefined) ?? [];
 
       const analysis: FrameAnalysis = {
         qualityResult,
@@ -276,9 +278,9 @@ const LivenessScreen: React.FC<LivenessScreenProps> = ({ onLivenessVerified }) =
         rightEyeContour,
       };
 
-      runOnJS(processFrameOnJS)(analysis);
+      processFrameOnJSWorklet(analysis);
     },
-    [detectFaces, processFrameOnJS],
+    [detectFaces, processFrameOnJSWorklet],
   );
 
   // ---------------------------------------------------------------------------
